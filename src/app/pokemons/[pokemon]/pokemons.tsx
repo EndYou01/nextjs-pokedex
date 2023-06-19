@@ -18,6 +18,7 @@ export default function PokemonDetailsPage({ params: { pokemon } }: PageProps) {
         <div className='d-flex flex-column align-items-center'>
             <p><Link href="/" className='link-light'>⬅️ PokeDex</Link></p>
             {pokemonLoading && <Spinner animation="grow" />}
+            {pokemonData === null && <p>Pokemon not found</p>}
             {pokemonData &&
                 <>
                     <h1 className='text-center text-capitalize'>{pokemonData.name}</h1>
