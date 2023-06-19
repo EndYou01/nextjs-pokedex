@@ -5,18 +5,20 @@ import Link from 'next/link';
 import { Spinner } from 'react-bootstrap'
 import Image from 'next/image';
 import usePokemon from '@/hooks/usePokemon';
+import { useSearchParams } from "next/navigation";
 
 interface PageProps {
     params: { pokemon: string },
 }
 
 export default function PokemonDetailsPage({ params: { pokemon } }: PageProps) {
-
+    const searchParams = useSearchParams()!
+    const page = searchParams.get('page')
     const { pokemonData, pokemonLoading } = usePokemon(pokemon)
 
     return (
         <div className='d-flex flex-column align-items-center'>
-            <p><Link href="/" className='link-light'>⬅️ PokeDex</Link></p>
+            <p><Link href={`/?page=${page}`} className='link-light'>⬅️ PokeDex</Link></p>
             {pokemonLoading && <Spinner animation="grow" />}
             {pokemonData === null && <p>Pokemon not found</p>}
             {pokemonData &&
