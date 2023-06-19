@@ -2,10 +2,12 @@
 "use client"
 
 import Link from 'next/link';
-import { Spinner } from 'react-bootstrap'
+import { Spinner, Form, Button } from 'react-bootstrap'
 import Image from 'next/image';
 import usePokemon from '@/hooks/usePokemon';
 import { useSearchParams } from "next/navigation";
+import { FormEvent } from 'react';
+import * as PokemonApi from '@/network/pokemon.api'
 
 interface PageProps {
     params: { pokemon: string },
@@ -14,7 +16,19 @@ interface PageProps {
 export default function PokemonDetailsPage({ params: { pokemon } }: PageProps) {
     const searchParams = useSearchParams()!
     const page = searchParams.get('page')
-    const { pokemonData, pokemonLoading } = usePokemon(pokemon)
+
+    const { pokemonData, pokemonLoading, mutatePokemon } = usePokemon(pokemon)
+
+    async function handleSubmitNickname(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement)
+        const nickname = formData.get("nickname")?.toString().trim()
+
+        if (!pokemonData || !nickname) return;
+
+        const update = await PokemonApi.setNickname(pokemonData, nickname)
+        mutatePokemon(update, { revalidate: false });
+    }
 
     return (
         <div className='d-flex flex-column align-items-center'>
@@ -34,8 +48,14 @@ export default function PokemonDetailsPage({ params: { pokemon } }: PageProps) {
                         <div><strong>Types: </strong>{pokemonData.types.map(type => type.type.name).join(", ")}</div>
                         <div><strong>Height: </strong>{pokemonData.height * 10} cm</div>
                         <div><strong>Weight: </strong>{pokemonData.weight / 10} kg</div>
-
                     </div>
+                    <Form onSubmit={handleSubmitNickname} className="mt-4" >
+                        <Form.Group controlId='pokemon-nickname-input' className='mb-3'>
+                            <Form.Label>Give this Pokemon a nickname</Form.Label>
+                            <Form.Control name='nickname' placeholder='E.g. Ferdinand' />
+                        </Form.Group>
+                        <Button type="submit">Set nickname</Button>
+                    </Form>
                 </>}
         </div>
     );
