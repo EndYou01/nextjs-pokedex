@@ -15,8 +15,8 @@ export interface Pokemon {
     height: number,
     sprites: {
         other: {
-            "official.artwork": {
-                front_deffault: string
+            "official-artwork": {
+                front_default: string
             }
         }
     }
